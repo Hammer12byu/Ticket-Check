@@ -27,3 +27,10 @@ model User {
 
   @@map("users")
 }
+
+model Event {
+  id   String @id @default(uuid())
+  name String
+  url  String
+  createdAt DateTime @default(now())
+}

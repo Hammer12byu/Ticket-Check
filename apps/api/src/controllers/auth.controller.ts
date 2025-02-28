@@ -1,5 +1,8 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
+import { PrismaClient} from '@prisma/client';
+
+const prisma = new PrismaClient(); 
 
 @Controller('auth')
 export class AuthController {
@@ -10,4 +13,6 @@ export class AuthController {
   async handleLogin(@Body() loginDto: Record<string, any>) {
     return this.authService.login(loginDto.email, loginDto.password);
   }
+  
 }
+

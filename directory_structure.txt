@@ -1,0 +1,195 @@
+.
+├── README.md
+├── apps
+│   ├── api
+│   │   ├── Procfile
+│   │   ├── README.md
+│   │   ├── dist
+│   │   │   ├── app.module.d.ts
+│   │   │   ├── app.module.js
+│   │   │   ├── app.module.js.map
+│   │   │   ├── controllers
+│   │   │   │   ├── auth.controller.d.ts
+│   │   │   │   ├── auth.controller.js
+│   │   │   │   ├── auth.controller.js.map
+│   │   │   │   ├── health.controller.d.ts
+│   │   │   │   ├── health.controller.js
+│   │   │   │   └── health.controller.js.map
+│   │   │   ├── data
+│   │   │   │   ├── db.d.ts
+│   │   │   │   ├── db.js
+│   │   │   │   ├── db.js.map
+│   │   │   │   ├── user.d.ts
+│   │   │   │   ├── user.js
+│   │   │   │   └── user.js.map
+│   │   │   ├── logger.middleware.d.ts
+│   │   │   ├── logger.middleware.js
+│   │   │   ├── logger.middleware.js.map
+│   │   │   ├── main.d.ts
+│   │   │   ├── main.js
+│   │   │   ├── main.js.map
+│   │   │   ├── services
+│   │   │   │   ├── auth.service.d.ts
+│   │   │   │   ├── auth.service.js
+│   │   │   │   └── auth.service.js.map
+│   │   │   ├── tsconfig.build.tsbuildinfo
+│   │   │   └── util
+│   │   │       ├── constants.d.ts
+│   │   │       ├── constants.js
+│   │   │       └── constants.js.map
+│   │   ├── nest-cli.json
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── app.module.ts
+│   │   │   ├── controllers
+│   │   │   │   ├── auth.controller.ts
+│   │   │   │   └── health.controller.ts
+│   │   │   ├── data
+│   │   │   │   ├── db.ts
+│   │   │   │   └── user.ts
+│   │   │   ├── logger.middleware.ts
+│   │   │   ├── main.ts
+│   │   │   ├── services
+│   │   │   │   └── auth.service.ts
+│   │   │   └── util
+│   │   │       └── constants.ts
+│   │   ├── tsconfig.build.json
+│   │   └── tsconfig.json
+│   └── web
+│       ├── README.md
+│       ├── dist
+│       │   ├── assets
+│       │   │   ├── index-CB7wNRjL.css
+│       │   │   └── index-M7KJhLNo.js
+│       │   ├── cloud-bolt-svgrepo-com.svg
+│       │   └── index.html
+│       ├── index.html
+│       ├── package.json
+│       ├── public
+│       │   └── cloud-bolt-svgrepo-com.svg
+│       ├── src
+│       │   ├── App.css
+│       │   ├── App.tsx
+│       │   ├── assets
+│       │   │   ├── GD&T_Straightness.svg
+│       │   │   ├── Line_segment.svg
+│       │   │   ├── arrow-right-from-bracket-svgrepo-com.svg
+│       │   │   ├── circle-user-svgrepo-com.svg
+│       │   │   ├── close-ellipse-svgrepo-com.svg
+│       │   │   ├── cloud-bolt-svgrepo-com.svg
+│       │   │   ├── cloud-rain-alt-1-svgrepo-com.svg
+│       │   │   ├── cloud-rainbow-svgrepo-com.svg
+│       │   │   ├── cloud-sun-alt-svgrepo-com.svg
+│       │   │   ├── exit-svgrepo-com.svg
+│       │   │   ├── hamburger-2-menu-mobile-svgrepo-com.svg
+│       │   │   ├── key-alt-svgrepo-com.svg
+│       │   │   ├── menu-alt-1-svgrepo-com.svg
+│       │   │   ├── person-svgrepo-com.svg
+│       │   │   └── square-user-svgrepo-com.svg
+│       │   ├── components
+│       │   │   ├── EventForm.tsx
+│       │   │   ├── Nav.tsx
+│       │   │   ├── NavLink.tsx
+│       │   │   └── RequireAuth.tsx
+│       │   ├── main.tsx
+│       │   ├── pages
+│       │   │   ├── Landing.tsx
+│       │   │   ├── Login.tsx
+│       │   │   ├── Rainbow.tsx
+│       │   │   ├── Storm.tsx
+│       │   │   └── Sunshine.tsx
+│       │   ├── router
+│       │   │   ├── Router.tsx
+│       │   │   ├── authContext.tsx
+│       │   │   ├── authProvider.tsx
+│       │   │   └── useAuth.tsx
+│       │   ├── util
+│       │   │   ├── axiosClient.ts
+│       │   │   ├── constants.ts
+│       │   │   └── stringUtil.ts
+│       │   └── vite-env.d.ts
+│       ├── tsconfig.json
+│       ├── tsconfig.node.json
+│       └── vite.config.ts
+├── directory_structure.txt
+├── package-lock.json
+├── package.json
+├── packages
+│   ├── config-eslint
+│   │   ├── README.md
+│   │   ├── index.js
+│   │   ├── next.js
+│   │   ├── package.json
+│   │   ├── react.js
+│   │   ├── remix.js
+│   │   └── server.js
+│   ├── config-typescript
+│   │   ├── base.json
+│   │   ├── nextjs.json
+│   │   ├── package.json
+│   │   ├── react-app.json
+│   │   ├── react-library.json
+│   │   ├── remix.json
+│   │   └── vite.json
+│   ├── database
+│   │   ├── dist
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   ├── index.js
+│   │   │   └── prisma
+│   │   │       ├── seed.d.ts
+│   │   │       ├── seed.d.ts.map
+│   │   │       └── seed.js
+│   │   ├── index.ts
+│   │   ├── package.json
+│   │   ├── prisma
+│   │   │   ├── migrations
+│   │   │   │   ├── 20231209204834_create_db
+│   │   │   │   │   └── migration.sql
+│   │   │   │   ├── 20250212235143_test_migration
+│   │   │   │   │   └── migration.sql
+│   │   │   │   └── migration_lock.toml
+│   │   │   ├── schema.prisma
+│   │   │   └── seed.ts
+│   │   ├── tsconfig.json
+│   │   └── turbo.json
+│   ├── jest-presets
+│   │   ├── jest
+│   │   │   ├── browser
+│   │   │   │   └── jest-preset.js
+│   │   │   └── node
+│   │   │       └── jest-preset.js
+│   │   └── package.json
+│   ├── logger
+│   │   ├── dist
+│   │   │   ├── index.d.ts
+│   │   │   └── index.js
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── __tests__
+│   │   │   │   └── log.test.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.json
+│   │   ├── tsup.config.ts
+│   │   └── turbo.json
+│   └── ui
+│       ├── dist
+│       │   ├── index.d.mts
+│       │   ├── index.d.ts
+│       │   ├── index.js
+│       │   └── index.mjs
+│       ├── package.json
+│       ├── src
+│       │   ├── CounterButton
+│       │   │   ├── index.test.tsx
+│       │   │   └── index.tsx
+│       │   ├── Link
+│       │   │   ├── index.test.tsx
+│       │   │   └── index.tsx
+│       │   └── index.tsx
+│       ├── tsconfig.json
+│       ├── tsup.config.ts
+│       └── turbo.json
+└── turbo.json
+
+46 directories, 147 files
