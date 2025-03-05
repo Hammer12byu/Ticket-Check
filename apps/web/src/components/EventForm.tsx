@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_URL } from "../util/constants";
 
 export default function EventForm() {
   const [url, setUrl] = useState("");
@@ -8,7 +9,7 @@ export default function EventForm() {
 
   const submitForm = async () => {
     try {
-      const res = await fetch("http://localhost:3000/auth/events/add", {
+      const res = await fetch(`${API_URL}/events/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, name }),

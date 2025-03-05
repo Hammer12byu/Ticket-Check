@@ -10,7 +10,7 @@ export class EventController {
   async createEvent(@Body() body: { name: string; url: string }) {
     try {
       const event = await prisma.event.create({
-        data: { name: body.name, url: body.url },
+        data: { name: body.name, sourceUrl: body.url }, // ✅ Match with `schema.prisma`
       });
       return { message: 'Event created successfully', event };
     } catch (error) {

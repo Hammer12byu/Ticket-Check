@@ -29,8 +29,30 @@ model User {
 }
 
 model Event {
-  id   String @id @default(uuid())
-  name String
-  url  String
+  id        Int    @id @default(autoincrement())
+  name      String
+  sourceUrl String @unique 
   createdAt DateTime @default(now())
+
+  seats     EventSeat[]
+  zonePrices EventZonePrice[]
+}
+
+model EventSeat {
+  id         Int    @id @default(autoincrement())
+  seatNo     String
+  seatStatus String
+  seatType   String
+  zoneLabel  String
+  price      Float
+  eventId    Int
+  event      Event @relation(fields: [eventId], references: [id])
+}
+
+model EventZonePrice {
+  id        Int    @id @default(autoincrement())
+  zoneColor String
+  price     Float
+  eventId   Int
+  event     Event @relation(fields: [eventId], references: [id])
 }

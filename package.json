@@ -28,8 +28,9 @@
   ],
   "packageManager": "npm@10.2.3",
   "dependencies": {
-    "turbo": "^2.3.3",
+    "@prisma/client": "^6.4.1",
     "@swc/cli": "^0.5.2",
-    "@swc/core": "^1.10.3"
+    "@swc/core": "^1.10.3",
+    "turbo": "^2.3.3"
   }
 }
