@@ -1,27 +1,35 @@
+// eventform.tsx
 import { useState } from "react";
 import { API_URL } from "../util/constants";
 
 export default function EventForm() {
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
+  const [row, setRow] = useState(""); // New: row input
+  const [section, setSection] = useState("center"); // New: section dropdown (default "center")
+  const [groupSize, setGroupSize] = useState(1); // New: group size input
   const [response, setResponse] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(""); // ✅ State for success message
+  const [successMessage, setSuccessMessage] = useState("");
 
   const submitForm = async () => {
     try {
       const res = await fetch(`${API_URL}/events/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, name }),
+        body: JSON.stringify({ name, url, row, section, groupSize }),
       });
 
       const data = await res.json();
       setResponse(data);
 
       if (res.ok) {
-        setSuccessMessage("Event created successfully! ✅"); // ✅ Show success message
-        setName(""); // ✅ Clear input fields
+        setSuccessMessage("Event created successfully! ✅");
+        // Clear fields
+        setName("");
         setUrl("");
+        setRow("");
+        setSection("center");
+        setGroupSize(1);
 
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
@@ -35,15 +43,15 @@ export default function EventForm() {
 
   return (
     <div style={styles.container}>
-       <h2 style={{ 
+      <h2 style={{
             color: "white", 
             fontWeight: "bold", 
             fontSize: "24px", 
             textAlign: "right", 
             paddingRight: "190px"
         }}>
-            Event Form
-        </h2>
+          Event Form
+      </h2>
       <input
         type="text"
         placeholder="Event Name"
@@ -58,23 +66,41 @@ export default function EventForm() {
         onChange={(e) => setUrl(e.target.value)}
         style={styles.input}
       />
+      <input
+        type="text"
+        placeholder="Row (e.g., M)"
+        value={row}
+        onChange={(e) => setRow(e.target.value)}
+        style={styles.input}
+      />
+      <select 
+        value={section} 
+        onChange={(e) => setSection(e.target.value)}
+        style={styles.input}
+      >
+        <option value="left">Left</option>
+        <option value="center">Center</option>
+        <option value="right">Right</option>
+      </select>
+      <input
+        type="number"
+        placeholder="Group Size"
+        value={groupSize}
+        onChange={(e) => setGroupSize(Number(e.target.value))}
+        style={styles.input}
+      />
       <button onClick={submitForm} style={styles.button}>Submit</button>
-
-      {/* ✅ Show Success Message */}
       {successMessage && <p style={styles.successMessage}>{successMessage}</p>}
-
-      {/* ✅ Show API Response */}
       {response && <pre style={styles.response}>{JSON.stringify(response, null, 2)}</pre>}
     </div>
   );
 }
 
-// ✅ Updated CSS Styles
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
-    flexDirection: "column" as "column", 
-    alignItems: "flex-end" as "flex-end", 
+    flexDirection: "column", 
+    alignItems: "flex-end", 
     width: "100%",
     padding: "20px",
     paddingRight: "50px",
@@ -88,7 +114,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginBottom: "10px",
     borderRadius: "5px",
     border: "1px solid #ccc",
-    textAlign: "left" as "left", 
+    textAlign: "left", 
   },
   button: {
     width: "320px",
@@ -99,15 +125,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "1px solid black",
     borderRadius: "5px",
     cursor: "pointer",
-    textAlign: "center" as "center",
+    textAlign: "center",
   },
   response: {
     marginTop: "20px",
-    textAlign: "right" as "right",
+    textAlign: "right",
     maxWidth: "320px",
     whiteSpace: "pre-wrap",
   },
-  successMessage: { // ✅ Added Success Message Styling
+  successMessage: {
     color: "green",
     marginTop: "10px",
     fontSize: "16px",

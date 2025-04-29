@@ -29,12 +29,15 @@ model User {
 }
 
 model Event {
-  id        Int    @id @default(autoincrement())
-  name      String
-  sourceUrl String @unique 
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  name       String
+  sourceUrl  String
+  row        String?
+  section    String?
+  groupSize  Int?
+  createdAt  DateTime @default(now())
 
-  seats     EventSeat[]
+  seats      EventSeat[]
   zonePrices EventZonePrice[]
 }
 
@@ -55,4 +58,10 @@ model EventZonePrice {
   price     Float
   eventId   Int
   event     Event @relation(fields: [eventId], references: [id])
+}
+
+model SeatMapping {
+  seat_no        Int     @id @unique // Primary key, unique seat number
+  row            String  // The row the seat is in
+  adjacent_seats Int[]   // List of adjacent seat_no values
 }
