@@ -42,18 +42,35 @@ export class XMLFetcherService {
     eventGroupSize?: number
   ): Promise<void> {
     try {
-      this.logger.log(`Fetching XML for event: ${eventName} (ID: ${eventId}) from ${eventUrl}`);
+      this.logger.log(`Fetching XML for event1: ${eventName} (ID: ${eventId}) from ${eventUrl}`);
 
-      const response = await fetch(eventUrl);
+      // 15-second timeout guard
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15_000);
+
+      const response = await fetch(eventUrl, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36',
+          Accept: '*/*',
+        },
+      });
+      clearTimeout(timeout);
+      this.logger.log(`Reached after fetch`);     // <— should print every cycle
       if (!response.ok) {
         throw new Error(`Failed to fetch XML: ${response.status} ${response.statusText}`);
       }
+      this.logger.log(`Fetched data successfully`);
+
       const xmlText = await response.text();
 
       // ✅ Parse XML
       const parser = new XMLParser({ ignoreAttributes: false, removeNSPrefix: true });
       const parsedData: any = parser.parse(xmlText);
       const root = parsedData.TNSyosSeatDetails || parsedData;
+
+      this.logger.log(`Parsed Data`);
 
       // ✅ Extract Zone Prices for This Event
       const zoneColors: XmlZone[] = root.ZoneColorList?.XmlZone
@@ -74,7 +91,7 @@ export class XMLFetcherService {
             ? root.seats.TNSyosSeat
             : [root.seats.TNSyosSeat])
         : [];
-      console.log({seats})
+      this.logger.log({seats})
 
       const seatData = seats.map((seat: XmlSeat) => {
         const matchingZone = zonePriceData.find(zone =>
@@ -90,7 +107,7 @@ export class XMLFetcherService {
           eventId: eventId,
         };
       });
-      console.log({seatData})
+      this.logger.log({seatData})
 
       // ✅ Filtering (filtering the amount of seats): if row and section are provided, only include seats that:
       // - Are in the specified row or in front of it (assuming rows are alphabetically ordered)
@@ -104,7 +121,7 @@ export class XMLFetcherService {
 
         });
       }
-      console.log({filteredSeatData})
+      this.logger.log({filteredSeatData})
 
       // ✅ Logging seat price breakdown after filtering
       const seatPriceMap: Record<number, number> = {};
@@ -118,9 +135,11 @@ export class XMLFetcherService {
 
       // ✅ Store the filtered data in the database.
       await this.storeData(eventId, zonePriceData, filteredSeatData);
-
-    } catch (error) {
-      this.logger.error(`Error fetching, parsing, or storing XML for event "${eventName}" (ID: ${eventId}):`, error);
+      
+    } catch (err: any) {
+      this.logger.error(
+        `Fetch failed for ${eventName}: ${err?.cause?.code ?? err.message}`
+      );
     }
   }
 
@@ -156,14 +175,15 @@ export class XMLFetcherService {
     // Fetch all events from the database.
     const events = await this.prisma.event.findMany();
     for (const event of events) {
-      await this.fetchAndStoreXML(
+      try{await this.fetchAndStoreXML(
         event.name,
         event.sourceUrl,
         event.id,
         event.row || undefined,
         event.section || undefined,
         event.groupSize || undefined
-      );
+      );}
+      catch(e){console.error(e)}
     }
   }
 
