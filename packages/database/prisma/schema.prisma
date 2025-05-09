@@ -35,6 +35,7 @@ model Event {
   row        String?
   section    String?
   groupSize  Int?
+  expectedPrice  Float?
   createdAt  DateTime @default(now())
 
   seats      EventSeat[]

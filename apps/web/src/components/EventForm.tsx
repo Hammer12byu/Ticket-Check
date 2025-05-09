@@ -1,4 +1,3 @@
-// eventform.tsx
 import { useState } from "react";
 import { API_URL } from "../util/constants";
 
@@ -10,13 +9,14 @@ export default function EventForm() {
   const [groupSize, setGroupSize] = useState(1); // New: group size input
   const [response, setResponse] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [expectedPrice, setExpectedPrice] = useState<number | ''>(''); // New: expected price input
 
   const submitForm = async () => {
     try {
       const res = await fetch(`${API_URL}/events/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, url, row, section, groupSize }),
+        body: JSON.stringify({ name, url, row, section, groupSize, expectedPrice }),
       });
 
       const data = await res.json();
@@ -71,6 +71,13 @@ export default function EventForm() {
         placeholder="Row (e.g., M)"
         value={row}
         onChange={(e) => setRow(e.target.value)}
+        style={styles.input}
+      />
+      <input
+        type="number"
+        placeholder="Expected Price"
+        value={expectedPrice}
+        onChange={(e) => setExpectedPrice(Number(e.target.value))}
         style={styles.input}
       />
       <select 
