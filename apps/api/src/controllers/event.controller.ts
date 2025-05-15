@@ -10,6 +10,7 @@ interface CreateEventDto {
   row: string;       // New
   section: string;   // New, e.g., "left", "center", "right"
   groupSize: number; // New
+  expectedPrice: number;
 }
 
 @Controller('events') 
@@ -23,7 +24,8 @@ export class EventController {
           sourceUrl: body.url,
           row: body.row,         // Save row
           section: body.section, // Save section
-          groupSize: body.groupSize // Save group size
+          groupSize: body.groupSize, // Save group size
+          expectedPrice: body.expectedPrice
         },
       });
       return { message: 'Event created successfully', event };

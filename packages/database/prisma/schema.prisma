@@ -44,11 +44,13 @@ model Event {
 
 model EventSeat {
   id         Int    @id @default(autoincrement())
-  seatNo     String
+  seatNo     Int
   seatStatus String
   seatType   String
   zoneLabel  String
   price      Float
+  isvalid       Boolean @default(false)
+  groupChecked  Boolean @default(false)
   eventId    Int
   event      Event @relation(fields: [eventId], references: [id])
 }
@@ -65,4 +67,7 @@ model SeatMapping {
   seat_no        Int     @id @unique // Primary key, unique seat number
   row            String  // The row the seat is in
   adjacent_seats Int[]   // List of adjacent seat_no values
+  section        String? // The section a seat is in
+
+  @@map("SeatMapping") // it wasn't recognizing the table so chatgpt told me to add this
 }

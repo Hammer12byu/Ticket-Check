@@ -52,6 +52,9 @@ export class XMLFetcherService {
 
     try {
       this.logger.log(`Fetching XML for ${eventName} (ID: ${eventId})`);
+      if (expectedPrice === undefined) {
+        this.logger.error(`❌ Missing expectedPrice for event ${eventId} — all seats will fail price validation`);
+      }
 
       const response = await fetch(eventUrl, {
         signal: controller.signal,
@@ -110,16 +113,12 @@ export class XMLFetcherService {
         };
       });
 
-
-
-      
-
+      // troubleshooting: logging the amount of parsed seats
+      this.logger.debug(`Raw seats parsed: ${seatData.length}`);
 
       
-      let filteredSeatData = seatData;
-      // ✅ Count valid groups
+      // Set Valid Groups to 0
       let validGroupCount = 0;
-      const processedSeats = new Set<number>();
 
       // done: select the entire array of SeatMapping, once it is in code I can do lookups like .find or .filter
       const SeatMapping = await this.prisma.seatMapping.findMany();
@@ -129,23 +128,42 @@ export class XMLFetcherService {
           //early exit in all invalid cases, not changing boolean to false, just exiting if any of these trigger
           // data validation:
                 // 1. Validate seatStatus
-              const validStatuses = ['0']; // Only '0' (Available) is valid
-              if (!validStatuses.includes(seat.seatStatus)) return;
-              
-              // 2. Validate seatType
-              if (seat.seatType !== '1') return;
+            const mapping = SeatMapping.find((m) => m.seat_no === seat.seatNo);
 
-              // 3. Validate expectedPrice to
-              if (seat.price !== expectedPrice) return;
-
-               // 4. Must match the section (zoneLabel) from the event form
-              if (eventSection && seat.zoneLabel?.toLowerCase().trim() !== eventSection.toLowerCase().trim()) return;
+          if (!['0'].includes(seat.seatStatus)) {
+            this.logger.debug(`Seat ${seat.seatNo} rejected: invalid seatStatus ${seat.seatStatus}`);
+            return;
+          }
         
-              // 5. Must match or be in front of the row from event form 
-              const mapping = SeatMapping.find((m) => m.seat_no === seat.seatNo);
-              if (!mapping || !mapping.row) return;
-                  
-              if (!this.isRowInFrontOrEqual(mapping.row, eventRow)) return;
+          if (seat.seatType !== '1') {
+            this.logger.debug(`Seat ${seat.seatNo} rejected: invalid seatType ${seat.seatType}`);
+            return;
+          }
+        
+          if (seat.price !== expectedPrice) {
+            this.logger.debug(`Seat ${seat.seatNo} rejected: price mismatch (found ${seat.price}, expected ${expectedPrice})`);
+            return;
+          }
+        
+          if (
+            eventSection &&
+            mapping?.section?.toLowerCase().trim() !== eventSection.toLowerCase().trim()
+          ) {
+            this.logger.debug(`Seat ${seat.seatNo} rejected: section mismatch (found ${mapping?.section}, expected ${eventSection})`);
+            return;
+          }
+        
+          if (!mapping || !mapping.row) {
+            this.logger.debug(`Seat ${seat.seatNo} rejected: no seat mapping or row`);
+            return;
+          }
+        
+          if (!this.isRowInFrontOrEqual(mapping.row, eventRow)) {
+            this.logger.debug(`Seat ${seat.seatNo} rejected: row ${mapping.row} is behind target ${eventRow}`);
+            return;
+          }
+        
+        
 
           // if it hasn't exited yet, set to true
               seat.isvalid = true;
@@ -153,6 +171,10 @@ export class XMLFetcherService {
           
         });
       }
+
+      // troubleshooting: logging the amount of seats that passed individual validation
+      const validBeforeGroup = seatData.filter(s => s.isvalid).length;
+      this.logger.debug(`Seats valid before group filtering: ${validBeforeGroup}`);
 
       // determine how many consecutive seats are in each seat group, if a seat group doesn't have enough seats to fit the criteria, set all isvalid values to false
       // one group at a time, create a group by creating a separate array
@@ -167,7 +189,9 @@ export class XMLFetcherService {
       
         for (const seat of seatData) {
           if (!seat.isvalid || seat.groupChecked) continue;
-      
+
+          validGroupCount++;
+
           const group = [seat];
           seat.groupChecked = true;
       
@@ -202,7 +226,25 @@ export class XMLFetcherService {
           }
         }
       }
+      // troubleshooting: log amount of seats still valid after grouping
+      const validAfterGroup = seatData.filter(s => s.isvalid).length;
+      this.logger.debug(`Seats valid after group filtering: ${validAfterGroup}`);
 
+      /* ─────────────── store to DB ─────────────── */
+      await this.storeData(eventId, zonePriceData, seatData);
+
+      /* ---------- COUNT VALID GROUPS FOR SUMMARY ---------- */
+      if (!eventGroupSize || eventGroupSize <= 1) {
+        // No grouping requirement ⇒ every valid seat counts as its own group
+        validGroupCount = seatData.filter(s => s.isvalid).length;
+      }
+      // troubleshooting:
+      this.logger.debug(`Counted ${validGroupCount} valid groups (no grouping logic)`);
+
+      // else branch is already handled inside the contiguous-group loop
+      // (it bumps validGroupCount++ once per qualifying group)
+
+      // Log how many valid groups there are
       const summaryMessage =
               validGroupCount === 0
               ? 'This ticket grouping is no longer available'
@@ -210,11 +252,8 @@ export class XMLFetcherService {
 
       this.logger.log(summaryMessage);
 
-      /* ─────────────── store to DB ─────────────── */
-      await this.storeData(eventId, zonePriceData, filteredSeatData);
-
       /* ─────────────── summary log only ─────────────── */
-      this.logger.log(`Event ID ${eventId}: ${filteredSeatData.length} seats stored`);
+      this.logger.log(`Event ID ${eventId}: ${seatData.length} seats stored`);
     } catch (err: any) {
       clearTimeout(timeout);
       this.logger.error(
@@ -222,7 +261,6 @@ export class XMLFetcherService {
       );
     }
   }
-
 
 
 
@@ -240,6 +278,8 @@ export class XMLFetcherService {
     if (seatData.length)
       await this.prisma.eventSeat.createMany({ data: seatData });
   }
+
+
 
   @Cron('*/12 * * * * *')
   async handleCron() {
